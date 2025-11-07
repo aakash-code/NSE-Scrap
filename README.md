@@ -1,0 +1,254 @@
+# NSE IPO Automation for Google Sheets
+
+Automatically fetch and display IPO data from NSE India directly in Google Sheets with sorting, filtering, and auto-refresh capabilities.
+
+## Features
+
+- **Fetch IPO Data**: Automatically retrieves Current, Past, and Upcoming IPOs from NSE India
+- **Smart Filtering**: Filter by IPO status (Current/Past/Upcoming)
+- **Auto-Sorting**: Automatically sorts data by Security Type
+- **Anti-Scraping Handling**: Properly configured headers to bypass NSE's security measures
+- **Caching**: Caches data for 30 minutes to minimize API requests
+- **Beautiful Formatting**: Auto-formatted tables with frozen headers and alternating row colors
+- **Custom Menu**: Easy-to-use menu in Google Sheets
+- **Auto-Refresh**: Optional daily automatic data refresh
+
+## Why This Solution?
+
+NSE India's website uses JavaScript to load IPO data and implements anti-scraping measures, making the standard `=IMPORTHTML()` function unreliable. This Google Apps Script solution:
+
+1. Uses proper HTTP headers to mimic browser requests
+2. Accesses NSE's API directly for reliable data
+3. Handles session management and cookies
+4. Provides caching to avoid rate limiting
+5. Offers a user-friendly interface with custom menus
+
+## Installation
+
+### Step 1: Open Google Sheets
+
+1. Create a new Google Sheet or open an existing one
+2. Click on **Extensions** > **Apps Script**
+
+### Step 2: Add the Script
+
+1. Delete any existing code in the script editor
+2. Copy the entire contents of `NSE_IPO_Scraper.gs` from this repository
+3. Paste it into the script editor
+4. Click the **Save** icon (or press `Ctrl+S` / `Cmd+S`)
+5. Name your project (e.g., "NSE IPO Automation")
+
+### Step 3: Authorize the Script
+
+1. Close the Apps Script editor
+2. Refresh your Google Sheet
+3. You'll see a new menu: **NSE IPO Automation**
+4. Click on any menu item (e.g., "Fetch All IPOs")
+5. You'll be prompted to authorize the script
+6. Click **Continue** and grant the necessary permissions
+
+## Usage
+
+### Using the Custom Menu
+
+After installation, you'll see the **NSE IPO Automation** menu in your Google Sheet:
+
+#### Main Functions:
+
+1. **Fetch All IPOs**: Retrieves Current, Past, and Upcoming IPOs in one sheet
+2. **Fetch Past Issues Only**: Shows only closed/past IPOs
+3. **Fetch Current Issues Only**: Shows only currently active IPOs
+4. **Fetch Upcoming Issues Only**: Shows only upcoming IPOs
+5. **Clear Data**: Clears all data from the active sheet
+6. **About**: Shows information about the script
+
+### Data Columns
+
+The script fetches the following information for each IPO:
+
+| Column | Description |
+|--------|-------------|
+| Company Name | Name of the company |
+| Security Type | Type of security (Equity, Debt, etc.) |
+| Issue Type | Type of issue (IPO, FPO, Rights Issue, etc.) |
+| Issue Price | Price per share |
+| Issue Size (Cr) | Total issue size in Crores |
+| Open Date | Issue opening date |
+| Close Date | Issue closing date |
+| Allotment Date | Date of allotment |
+| Listing Date | Date of listing on exchange |
+| Status | Current status (Open, Closed, Upcoming) |
+| Symbol | Trading symbol |
+
+### Automatic Sorting
+
+All data is automatically sorted by **Security Type** for easier analysis.
+
+### Data Refresh
+
+The script automatically caches data for 30 minutes to avoid excessive requests to NSE. To force a refresh, simply run the fetch function again after 30 minutes, or clear your cache:
+
+```javascript
+// Run this in the Apps Script editor to clear cache
+CacheService.getScriptCache().removeAll(['nse_ipo_data_all', 'nse_ipo_data_past', 'nse_ipo_data_current', 'nse_ipo_data_upcoming']);
+```
+
+## Advanced Features
+
+### Setting Up Daily Auto-Refresh
+
+To automatically refresh your IPO data every day at 9 AM:
+
+1. Open the Apps Script editor
+2. Find the function `setupDailyTrigger()`
+3. Click on it and run it
+4. Authorize the trigger when prompted
+
+Your data will now refresh automatically every day at 9 AM.
+
+### Removing Auto-Refresh
+
+To remove the automatic refresh:
+
+1. Open the Apps Script editor
+2. Find the function `removeDailyTrigger()`
+3. Click on it and run it
+
+### Customization Options
+
+You can customize the script by modifying these constants at the top of the code:
+
+```javascript
+const NSE_IPO_URL = 'https://www.nseindia.com/api/ipo-detail';
+const CACHE_DURATION_MINUTES = 30; // Change cache duration
+```
+
+You can also customize:
+- Header colors (line 213: `headerRange.setBackground('#4285F4')`)
+- Auto-refresh time (line 422: `.atHour(9)`)
+- Data fields and columns (modify the `parseIPOData` function)
+
+## Troubleshooting
+
+### "Failed to fetch data from NSE India" Error
+
+**Possible causes:**
+1. NSE's API structure has changed
+2. Network connectivity issues
+3. NSE's servers are temporarily down
+4. Rate limiting (too many requests)
+
+**Solutions:**
+1. Wait 30-60 minutes and try again
+2. Clear the cache and retry
+3. Check if the NSE website is accessible
+4. Contact the repository maintainer if the issue persists
+
+### Authorization Issues
+
+If you get authorization errors:
+1. Go to **Extensions** > **Apps Script**
+2. Click on the clock icon (Triggers) on the left
+3. Remove any existing triggers
+4. Re-authorize the script
+
+### Data Not Updating
+
+If data appears stale:
+1. The cache might not have expired (30 min default)
+2. Clear cache manually (see "Data Refresh" section)
+3. Close and reopen the spreadsheet
+
+### "Service invoked too many times" Error
+
+This means you've exceeded Google's quota limits. Solutions:
+1. Increase the cache duration (reduce API calls)
+2. Wait a few hours before trying again
+3. Avoid running the script too frequently
+
+## Technical Details
+
+### API Endpoint
+
+The script uses NSE India's official API endpoint:
+```
+https://www.nseindia.com/api/ipo-detail
+```
+
+### HTTP Headers
+
+To bypass anti-scraping measures, the script uses:
+- Proper User-Agent string
+- Referer header
+- Accept headers for JSON
+- Session management via initial page visit
+
+### Rate Limiting
+
+- Data is cached for 30 minutes by default
+- Maximum script execution time: 6 minutes (Google's limit)
+- Recommended: Don't run more than once every 30 minutes
+
+### Data Sources
+
+All data is fetched directly from NSE India's official API, ensuring:
+- Real-time accuracy
+- Official data integrity
+- Reliable updates
+
+## Limitations
+
+1. **Google Apps Script Execution Time**: Maximum 6 minutes per execution
+2. **Daily Quota**: Google limits the number of UrlFetch calls per day
+3. **NSE API Changes**: NSE may change their API structure without notice
+4. **Rate Limiting**: NSE may throttle or block excessive requests
+
+## Security & Privacy
+
+- The script runs entirely within your Google account
+- No data is sent to third-party servers
+- Only fetches publicly available data from NSE India
+- No personal information is collected or stored
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is provided as-is for educational and personal use. Please respect NSE India's terms of service and avoid excessive API requests.
+
+## Support
+
+For issues, questions, or feature requests:
+1. Check the Troubleshooting section first
+2. Review the NSE India website to ensure the API is still accessible
+3. Open an issue on GitHub with detailed error messages
+
+## Changelog
+
+### Version 1.0.0 (2025-11-07)
+- Initial release
+- Fetch Current, Past, and Upcoming IPOs
+- Auto-sort by Security Type
+- Anti-scraping header handling
+- 30-minute data caching
+- Custom menu integration
+- Auto-refresh trigger support
+- Beautiful table formatting
+
+## Acknowledgments
+
+- NSE India for providing public IPO data
+- Google Apps Script for the automation platform
+- The open-source community for inspiration
+
+---
+
+**Disclaimer**: This tool is for informational purposes only. Always verify IPO data from official sources before making investment decisions. The maintainers are not responsible for any data inaccuracies or financial decisions made based on this tool.
