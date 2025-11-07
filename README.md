@@ -130,41 +130,38 @@ You can also customize:
 
 ## Troubleshooting
 
-### "Failed to fetch data from NSE India" Error
+### ⚠️ Data Not Displaying?
 
-**Possible causes:**
-1. NSE's API structure has changed
-2. Network connectivity issues
-3. NSE's servers are temporarily down
-4. Rate limiting (too many requests)
+If your IPO data isn't showing up, **[see the detailed TROUBLESHOOTING.md guide](TROUBLESHOOTING.md)** for step-by-step solutions.
 
-**Solutions:**
-1. Wait 30-60 minutes and try again
-2. Clear the cache and retry
-3. Check if the NSE website is accessible
-4. Contact the repository maintainer if the issue persists
+**Quick fixes:**
+1. Use the **🔧 Test API Connection** menu item to diagnose issues
+2. Use the **🗑️ Clear Cache** menu item and try again
+3. Check the execution logs in Apps Script (Extensions > Apps Script > Executions)
 
-### Authorization Issues
+### Common Issues
 
-If you get authorization errors:
-1. Go to **Extensions** > **Apps Script**
-2. Click on the clock icon (Triggers) on the left
-3. Remove any existing triggers
-4. Re-authorize the script
+For detailed solutions to these issues, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md):
 
-### Data Not Updating
+- **"No data available" in sheet** - API might be returning empty data or structure changed
+- **"Failed to fetch data from NSE India"** - Rate limited or blocked by NSE
+- **Empty fields/columns** - API field names may have changed
+- **"Service invoked too many times"** - Exceeded Google's quotas
+- **Authorization errors** - Need to re-authorize the script
 
-If data appears stale:
-1. The cache might not have expired (30 min default)
-2. Clear cache manually (see "Data Refresh" section)
-3. Close and reopen the spreadsheet
+### New Debugging Tools (v1.1.0)
 
-### "Service invoked too many times" Error
+The script now includes enhanced debugging features:
 
-This means you've exceeded Google's quota limits. Solutions:
-1. Increase the cache duration (reduce API calls)
-2. Wait a few hours before trying again
-3. Avoid running the script too frequently
+1. **Test API Connection**: Menu item that logs full API response structure
+2. **Clear Cache**: Force fresh data fetch from NSE
+3. **Detailed Logging**: Automatic logging of API responses and data processing
+4. **Better Error Messages**: More informative error messages with solutions
+
+To use these tools:
+- Open **NSE IPO Automation** menu in your Google Sheet
+- Click **🔧 Test API Connection** to see what NSE is returning
+- Check **Extensions > Apps Script > Executions** to view detailed logs
 
 ## Technical Details
 
@@ -232,6 +229,17 @@ For issues, questions, or feature requests:
 3. Open an issue on GitHub with detailed error messages
 
 ## Changelog
+
+### Version 1.1.0 (2025-11-07)
+- **Enhanced Debugging**: Added comprehensive logging throughout the script
+- **New Menu Items**:
+  - 🔧 Test API Connection - Diagnose API issues
+  - 🗑️ Clear Cache - Force fresh data fetch
+- **Better Error Handling**: More detailed error messages and stack traces
+- **Improved Data Parsing**: Handle multiple field name formats (camelCase and snake_case)
+- **New Test Function**: `testNSEAPIResponse()` for detailed API inspection
+- **Troubleshooting Guide**: Added TROUBLESHOOTING.md with step-by-step solutions
+- **Enhanced Logging**: Log API response codes, data structure, and parsing steps
 
 ### Version 1.0.0 (2025-11-07)
 - Initial release
