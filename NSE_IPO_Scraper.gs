@@ -5,6 +5,7 @@
  * it into your Google Sheet, with filtering and sorting capabilities.
  *
  * Author: Claude Code
+ * Version: 1.1.0
  * Last Updated: 2025-11-07
  */
 
@@ -25,6 +26,9 @@ function onOpen() {
     .addItem('Fetch Upcoming Issues Only', 'fetchUpcomingIssuesOnly')
     .addSeparator()
     .addItem('Clear Data', 'clearSheet')
+    .addSeparator()
+    .addItem('🔧 Test API Connection', 'testNSEAPIResponse')
+    .addItem('🗑️ Clear Cache', 'clearCache')
     .addItem('About', 'showAbout')
     .addToUi();
 }
@@ -41,8 +45,10 @@ function showAbout() {
     '• Fetch Current, Past, and Upcoming IPOs\n' +
     '• Auto-sort by Security Type\n' +
     '• Handles NSE anti-scraping measures\n' +
-    '• Caches data to minimize requests\n\n' +
-    'Version: 1.0.0',
+    '• Caches data to minimize requests\n' +
+    '• Debug tools for troubleshooting\n\n' +
+    'Version: 1.1.0\n' +
+    'GitHub: aakash-code/NSE-Scrap',
     ui.ButtonSet.OK
   );
 }
@@ -103,11 +109,21 @@ function fetchNSEData(category = 'all') {
     const response = UrlFetchApp.fetch(NSE_IPO_URL, apiOptions);
     const responseCode = response.getResponseCode();
 
+    Logger.log('NSE API response code: ' + responseCode);
+
     if (responseCode !== 200) {
+      const responseText = response.getContentText();
+      Logger.log('Non-200 response body: ' + responseText);
       throw new Error(`NSE API returned status code: ${responseCode}`);
     }
 
-    const jsonData = JSON.parse(response.getContentText());
+    const responseText = response.getContentText();
+    Logger.log('Response length: ' + responseText.length + ' characters');
+    Logger.log('First 500 chars of response: ' + responseText.substring(0, 500));
+
+    const jsonData = JSON.parse(responseText);
+    Logger.log('Successfully parsed JSON data');
+    Logger.log('JSON root keys: ' + Object.keys(jsonData).join(', '));
 
     // Cache the data
     cache.put(cacheKey, JSON.stringify(jsonData), CACHE_DURATION_MINUTES * 60);
@@ -128,8 +144,17 @@ function fetchNSEData(category = 'all') {
  * @return {Array} 2D array formatted for Google Sheets
  */
 function parseIPOData(ipoArray) {
+  Logger.log('parseIPOData called with array length: ' + (ipoArray ? ipoArray.length : 0));
+
   if (!ipoArray || ipoArray.length === 0) {
+    Logger.log('No IPO data to parse');
     return [['No data available']];
+  }
+
+  // Log first IPO object structure for debugging
+  if (ipoArray.length > 0) {
+    Logger.log('First IPO object keys: ' + Object.keys(ipoArray[0]).join(', '));
+    Logger.log('First IPO sample data: ' + JSON.stringify(ipoArray[0]));
   }
 
   // Header row
@@ -152,21 +177,22 @@ function parseIPOData(ipoArray) {
   // Parse each IPO
   ipoArray.forEach(ipo => {
     const row = [
-      ipo.companyName || '',
-      ipo.securityType || '',
-      ipo.issueType || '',
-      ipo.issuePrice || '',
-      ipo.issueSize || '',
-      ipo.issueStartDate || '',
-      ipo.issueEndDate || '',
-      ipo.allotmentDate || '',
-      ipo.listingDate || '',
+      ipo.companyName || ipo.company_name || '',
+      ipo.securityType || ipo.security_type || '',
+      ipo.issueType || ipo.issue_type || '',
+      ipo.issuePrice || ipo.issue_price || '',
+      ipo.issueSize || ipo.issue_size || '',
+      ipo.issueStartDate || ipo.issue_start_date || ipo.openDate || '',
+      ipo.issueEndDate || ipo.issue_end_date || ipo.closeDate || '',
+      ipo.allotmentDate || ipo.allotment_date || '',
+      ipo.listingDate || ipo.listing_date || '',
       ipo.status || '',
       ipo.symbol || ''
     ];
     rows.push(row);
   });
 
+  Logger.log('Parsed ' + (rows.length - 1) + ' IPO records');
   return rows;
 }
 
@@ -252,11 +278,28 @@ function fetchAllIPOs() {
     SpreadsheetApp.getActiveSpreadsheet().toast('Fetching IPO data from NSE India...', 'Please Wait', -1);
 
     const data = fetchNSEData('all');
+
+    // Log the structure of received data
+    Logger.log('Received data keys: ' + Object.keys(data).join(', '));
+    Logger.log('activeIpo count: ' + (data.activeIpo ? data.activeIpo.length : 0));
+    Logger.log('closedIpo count: ' + (data.closedIpo ? data.closedIpo.length : 0));
+    Logger.log('upcomingIpo count: ' + (data.upcomingIpo ? data.upcomingIpo.length : 0));
+
     const allIPOs = [
       ...(data.activeIpo || []),
       ...(data.closedIpo || []),
       ...(data.upcomingIpo || [])
     ];
+
+    Logger.log('Total IPOs combined: ' + allIPOs.length);
+
+    if (allIPOs.length === 0) {
+      SpreadsheetApp.getActiveSpreadsheet().toast(
+        'No IPO data received from NSE. Check logs for details.',
+        'Warning',
+        10
+      );
+    }
 
     let parsedData = parseIPOData(allIPOs);
     parsedData = sortBySecurityType(parsedData);
@@ -272,6 +315,7 @@ function fetchAllIPOs() {
   } catch (error) {
     SpreadsheetApp.getActiveSpreadsheet().toast('Error: ' + error.toString(), 'Failed', 5);
     Logger.log('Error in fetchAllIPOs: ' + error.toString());
+    Logger.log('Error stack: ' + error.stack);
   }
 }
 
@@ -408,4 +452,63 @@ function removeDailyTrigger() {
   });
 
   SpreadsheetApp.getUi().alert('Daily auto-refresh has been removed');
+}
+
+/**
+ * Clear all cached data to force fresh fetch from NSE
+ */
+function clearCache() {
+  const cache = CacheService.getScriptCache();
+  const keys = ['nse_ipo_data_all', 'nse_ipo_data_past', 'nse_ipo_data_current', 'nse_ipo_data_upcoming'];
+  cache.removeAll(keys);
+  SpreadsheetApp.getUi().alert('Cache cleared successfully! Next fetch will get fresh data from NSE.');
+  Logger.log('Cache cleared for all categories');
+}
+
+/**
+ * DEBUG FUNCTION: Test NSE API response
+ * Run this function from Apps Script editor to see what data NSE is returning
+ */
+function testNSEAPIResponse() {
+  try {
+    Logger.log('=== Testing NSE API Response ===');
+
+    const data = fetchNSEData('all');
+
+    Logger.log('\n--- Full Response Structure ---');
+    Logger.log('Response keys: ' + Object.keys(data).join(', '));
+    Logger.log('Full response: ' + JSON.stringify(data, null, 2));
+
+    Logger.log('\n--- Active IPOs ---');
+    Logger.log('activeIpo exists: ' + (data.activeIpo !== undefined));
+    Logger.log('activeIpo length: ' + (data.activeIpo ? data.activeIpo.length : 0));
+    if (data.activeIpo && data.activeIpo.length > 0) {
+      Logger.log('First active IPO: ' + JSON.stringify(data.activeIpo[0], null, 2));
+    }
+
+    Logger.log('\n--- Closed IPOs ---');
+    Logger.log('closedIpo exists: ' + (data.closedIpo !== undefined));
+    Logger.log('closedIpo length: ' + (data.closedIpo ? data.closedIpo.length : 0));
+    if (data.closedIpo && data.closedIpo.length > 0) {
+      Logger.log('First closed IPO: ' + JSON.stringify(data.closedIpo[0], null, 2));
+    }
+
+    Logger.log('\n--- Upcoming IPOs ---');
+    Logger.log('upcomingIpo exists: ' + (data.upcomingIpo !== undefined));
+    Logger.log('upcomingIpo length: ' + (data.upcomingIpo ? data.upcomingIpo.length : 0));
+    if (data.upcomingIpo && data.upcomingIpo.length > 0) {
+      Logger.log('First upcoming IPO: ' + JSON.stringify(data.upcomingIpo[0], null, 2));
+    }
+
+    SpreadsheetApp.getUi().alert(
+      'Test Complete',
+      'Check the execution log (View > Logs) to see the full API response structure.',
+      SpreadsheetApp.getUi().ButtonSet.OK
+    );
+
+  } catch (error) {
+    Logger.log('ERROR in testNSEAPIResponse: ' + error.toString());
+    Logger.log('Error stack: ' + error.stack);
+    SpreadsheetApp.getUi().alert('Error: ' + error.toString());
+  }
 }
