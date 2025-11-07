@@ -47,6 +47,19 @@ NSE India's website uses JavaScript to load IPO data and implements anti-scrapin
 5. You'll be prompted to authorize the script
 6. Click **Continue** and grant the necessary permissions
 
+### ⚠️ Important: Apps Script Editor Usage
+
+**DO NOT run the `onOpen()` function manually from the Apps Script editor!**
+
+This will cause an error: `Cannot call SpreadsheetApp.getUi() from this context`
+
+**To test the script from the editor, run these functions instead:**
+- `testNSEAPIResponse()` - Test API connection and see data structure
+- `fetchAllIPOs()` - Fetch all IPO data directly
+- `manualClearCache()` - Clear cache without UI
+
+**The menu will appear automatically when you open your Google Sheet.**
+
 ## Usage
 
 ### Using the Custom Menu
@@ -229,6 +242,12 @@ For issues, questions, or feature requests:
 3. Open an issue on GitHub with detailed error messages
 
 ## Changelog
+
+### Version 1.1.1 (2025-11-07)
+- **Better Documentation**: Added clear warnings not to run onOpen() manually
+- **New Function**: `manualClearCache()` for clearing cache from Apps Script editor
+- **Improved Comments**: Enhanced documentation in code to prevent common errors
+- **User Guidance**: Added instructions in function comments for proper usage
 
 ### Version 1.1.0 (2025-11-07)
 - **Enhanced Debugging**: Added comprehensive logging throughout the script

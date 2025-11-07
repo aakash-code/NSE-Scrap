@@ -5,8 +5,13 @@
  * it into your Google Sheet, with filtering and sorting capabilities.
  *
  * Author: Claude Code
- * Version: 1.1.0
+ * Version: 1.1.1
  * Last Updated: 2025-11-07
+ *
+ * ⚠️ IMPORTANT:
+ * - Do NOT run onOpen() manually from the editor!
+ * - Run testNSEAPIResponse() or fetchAllIPOs() instead
+ * - Close and reopen your Google Sheet to see the menu
  */
 
 // Configuration Constants
@@ -16,6 +21,22 @@ const CACHE_DURATION_MINUTES = 30; // Cache data for 30 minutes to avoid excessi
 
 /**
  * Custom menu to add to Google Sheets
+ *
+ * ⚠️ IMPORTANT: Do NOT run this function manually from the Apps Script editor!
+ * This function runs automatically when you open your Google Sheet.
+ *
+ * Running it manually will cause this error:
+ * "Cannot call SpreadsheetApp.getUi() from this context"
+ *
+ * To test the script:
+ * 1. Close the Apps Script editor
+ * 2. Close and reopen your Google Sheet
+ * 3. The menu will appear automatically
+ *
+ * Or run these functions directly from the editor:
+ * - testNSEAPIResponse() - Test API connection
+ * - fetchAllIPOs() - Fetch all IPO data
+ * - manualClearCache() - Clear cache without UI
  */
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
@@ -47,8 +68,9 @@ function showAbout() {
     '• Handles NSE anti-scraping measures\n' +
     '• Caches data to minimize requests\n' +
     '• Debug tools for troubleshooting\n\n' +
-    'Version: 1.1.0\n' +
-    'GitHub: aakash-code/NSE-Scrap',
+    'Version: 1.1.1\n' +
+    'GitHub: aakash-code/NSE-Scrap\n\n' +
+    '⚠️ Tip: Run testNSEAPIResponse() from Apps Script editor to diagnose issues!',
     ui.ButtonSet.OK
   );
 }
@@ -456,6 +478,7 @@ function removeDailyTrigger() {
 
 /**
  * Clear all cached data to force fresh fetch from NSE
+ * Note: This requires UI context (menu click). For manual runs, use manualClearCache()
  */
 function clearCache() {
   const cache = CacheService.getScriptCache();
@@ -466,8 +489,33 @@ function clearCache() {
 }
 
 /**
- * DEBUG FUNCTION: Test NSE API response
- * Run this function from Apps Script editor to see what data NSE is returning
+ * Manual cache clear - Use this to clear cache from Apps Script editor
+ * Run this function directly from the editor instead of clearCache()
+ */
+function manualClearCache() {
+  const cache = CacheService.getScriptCache();
+  const keys = ['nse_ipo_data_all', 'nse_ipo_data_past', 'nse_ipo_data_current', 'nse_ipo_data_upcoming'];
+  cache.removeAll(keys);
+  Logger.log('✅ Cache cleared successfully for all categories');
+  Logger.log('Next fetch will get fresh data from NSE');
+  return 'Cache cleared successfully!';
+}
+
+/**
+ * ✅ DEBUG FUNCTION: Test NSE API response
+ *
+ * THIS FUNCTION CAN BE RUN DIRECTLY FROM THE APPS SCRIPT EDITOR!
+ *
+ * To run:
+ * 1. Select "testNSEAPIResponse" from the function dropdown (top of editor)
+ * 2. Click the Run button (▶️)
+ * 3. Check the Execution Log to see detailed API response
+ *
+ * This will show you:
+ * - Whether NSE API is accessible (response code)
+ * - What data NSE is returning
+ * - How many IPOs are available
+ * - The structure of the data
  */
 function testNSEAPIResponse() {
   try {
