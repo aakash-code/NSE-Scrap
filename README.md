@@ -57,12 +57,27 @@ See [Installation - Google Sheets](#installation-google-sheets) section below.
 
 Use Python in Google Colab and auto-upload to Google Sheets - **No installation required!**
 
+#### All Stock Data (Comprehensive)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aakash-code/NSE-Scrap/blob/main/NSE_Colab_to_Sheets.ipynb)
 
+Fetches all indices, stocks by index, and stocks by sector.
+
+#### Sector Selector (Interactive) 🎯 **NEW!**
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aakash-code/NSE-Scrap/blob/main/NSE_Sector_Selector_Colab.ipynb)
+
+**Perfect for selecting specific sectors!**
+- Choose NIFTY AUTO → Get all automotive stocks
+- Choose NIFTY IT → Get all IT stocks
+- Select multiple sectors at once
+- Interactive dropdowns and buttons
+
+**How to use:**
 1. Click the badge above to open in Google Colab
 2. Run the cells (Shift+Enter)
 3. Authenticate with Google when prompted
-4. Data automatically appears in your Google Sheet!
+4. Select your sector from dropdown (e.g., NIFTY AUTO)
+5. Click "Fetch Stocks" button
+6. Data automatically appears in your Google Sheet!
 
 ### Option 3: Python Scripts (Best for Local Processing)
 
