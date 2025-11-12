@@ -80,6 +80,7 @@ logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+nse_scraper.log
 
 # Temporary files
 *.tmp
@@ -116,3 +117,8 @@ site/
 *.tar.gz
 *.rar
 *.7z
+
+# NSE Scraper Output
+output/
+*.csv
+*.xlsx

@@ -1,6 +1,8 @@
-# NSE Data Automation for Google Sheets
+# NSE Data Automation
 
-Automatically fetch and display IPO data and Stock Market data from NSE India directly in Google Sheets with sorting, filtering, and auto-refresh capabilities.
+Comprehensive solution for fetching IPO data and Stock Market data from NSE India with **dual implementation**:
+- **Google Apps Script** for direct Google Sheets integration
+- **Python Scripts** for advanced data processing and multiple export formats
 
 ## Features
 
@@ -25,15 +27,46 @@ Automatically fetch and display IPO data and Stock Market data from NSE India di
 
 ## Why This Solution?
 
-NSE India's website uses JavaScript to load IPO data and implements anti-scraping measures, making the standard `=IMPORTHTML()` function unreliable. This Google Apps Script solution:
+NSE India's website uses JavaScript to load IPO data and implements anti-scraping measures, making the standard `=IMPORTHTML()` function unreliable. This project provides two complementary solutions:
 
+### Google Apps Script (For Google Sheets)
 1. Uses proper HTTP headers to mimic browser requests
 2. Accesses NSE's API directly for reliable data
 3. Handles session management and cookies
 4. Provides caching to avoid rate limiting
 5. Offers a user-friendly interface with custom menus
+6. **Best for**: Direct Google Sheets integration, real-time updates
 
-## Installation
+### Python Scripts (For Advanced Use)
+1. Uses modern `nse-python` library for robust API access
+2. Supports multiple export formats (CSV, Excel, JSON)
+3. Batch processing capabilities
+4. Progress tracking and detailed logging
+5. Can be scheduled for automated runs
+6. **Best for**: Batch processing, data analysis, automated workflows
+
+## Quick Start
+
+### Option 1: Google Sheets (Recommended for Sheets Users)
+
+See [Installation - Google Sheets](#installation-google-sheets) section below.
+
+### Option 2: Python Scripts (Recommended for Data Analysis)
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Run interactive scraper
+python nse_scraper.py
+
+# Or run batch scraper
+python nse_batch_scraper.py
+```
+
+See [PYTHON_USAGE.md](PYTHON_USAGE.md) for detailed Python documentation.
+
+## Installation - Google Sheets
 
 ### Step 1: Open Google Sheets
 
@@ -258,10 +291,76 @@ All data is fetched directly from NSE India's official API, ensuring:
 
 ## Limitations
 
-1. **Google Apps Script Execution Time**: Maximum 6 minutes per execution
+### Google Apps Script Limitations
+1. **Execution Time**: Maximum 6 minutes per execution
 2. **Daily Quota**: Google limits the number of UrlFetch calls per day
 3. **NSE API Changes**: NSE may change their API structure without notice
 4. **Rate Limiting**: NSE may throttle or block excessive requests
+
+### Python Scripts Limitations
+1. **NSE API Availability**: Dependent on NSE website accessibility
+2. **nse-python Library**: May need updates if NSE changes their API
+3. **Network**: Requires stable internet connection
+
+## Python Scripts for Advanced Usage
+
+In addition to the Google Apps Script solution, this project includes Python scripts using the modern `nse-python` library for advanced data fetching and analysis.
+
+### Features
+
+- **Modern NSE API Wrapper**: Uses `nse-python` library
+- **Multiple Export Formats**: CSV, Excel (with formatting), JSON
+- **Batch Processing**: Fetch all data with single command
+- **Progress Tracking**: Visual progress bars
+- **Comprehensive Logging**: Detailed logs for debugging
+- **Automation Ready**: Can be scheduled with cron/Task Scheduler
+
+### Installation
+
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
+```
+
+### Quick Usage
+
+```bash
+# Interactive mode
+python nse_scraper.py
+
+# Batch mode - fetch everything
+python nse_batch_scraper.py
+
+# Fetch only indices
+python nse_batch_scraper.py --indices-only
+
+# Fetch stocks organized by sector
+python nse_batch_scraper.py --sector
+
+# Export only to CSV
+python nse_batch_scraper.py --format csv
+```
+
+### Python vs Google Apps Script
+
+| Feature | Python Scripts | Google Apps Script |
+|---------|---------------|-------------------|
+| **Integration** | Export to files | Direct to Google Sheets |
+| **Speed** | Fast (parallel possible) | Moderate |
+| **Export Formats** | CSV, Excel, JSON | Sheets only |
+| **Automation** | cron, Task Scheduler | Time-based triggers |
+| **Setup** | Requires Python | No setup needed |
+| **Best For** | Batch jobs, analysis | Real-time Sheets updates |
+
+### Detailed Documentation
+
+See **[PYTHON_USAGE.md](PYTHON_USAGE.md)** for:
+- Complete installation guide
+- Usage examples
+- API reference
+- Scheduling automation
+- Troubleshooting
+- Advanced usage patterns
 
 ## Security & Privacy
 
@@ -294,7 +393,14 @@ For issues, questions, or feature requests:
 ## Changelog
 
 ### Version 1.2.0 (2025-11-12)
-- **NEW: Stock Market Data Features**:
+- **NEW: Python Scripts with nse-python Library**:
+  - `nse_scraper.py` - Interactive scraper with menu interface
+  - `nse_batch_scraper.py` - Automated batch processing
+  - Export to CSV, Excel (with formatting), and JSON
+  - Progress bars and comprehensive logging
+  - Support for scheduling with cron/Task Scheduler
+  - See [PYTHON_USAGE.md](PYTHON_USAGE.md) for details
+- **NEW: Stock Market Data Features (Google Apps Script)**:
   - Fetch all stocks organized by major indices (NIFTY 50, NIFTY BANK, etc.)
   - Fetch all stocks organized by sectors (Banking, IT, Pharma, etc.)
   - Custom index query support for any NSE index
@@ -303,14 +409,19 @@ For issues, questions, or feature requests:
 - **New API Endpoints**:
   - `https://www.nseindia.com/api/allIndices` - All indices data
   - `https://www.nseindia.com/api/equity-stockIndices` - Index-wise stocks
-- **New Menu Items**:
+- **New Menu Items (Google Sheets)**:
   - Stock Market Data submenu with 4 new options
   - Fetch All Stocks (Index-wise)
   - Fetch All Stocks (Sector-wise)
   - Fetch Stocks by Index (custom query)
   - Fetch All Indices List
+- **New Files**:
+  - `requirements.txt` - Python dependencies
+  - `nse_scraper.py` - Main Python scraper
+  - `nse_batch_scraper.py` - Batch processing script
+  - `PYTHON_USAGE.md` - Complete Python documentation
 - **Enhanced Caching**: Added caching for indices and stock data
-- **Updated Documentation**: README updated with stock market features
+- **Updated Documentation**: README updated with dual implementation approach
 
 ### Version 1.1.0 (2025-11-07)
 - **Enhanced Debugging**: Added comprehensive logging throughout the script
