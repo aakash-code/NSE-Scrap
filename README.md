@@ -47,11 +47,26 @@ NSE India's website uses JavaScript to load IPO data and implements anti-scrapin
 
 ## Quick Start
 
-### Option 1: Google Sheets (Recommended for Sheets Users)
+### Option 1: Google Apps Script (Best for Direct Sheets Integration)
+
+Use `NSE_IPO_Scraper.gs` - runs inside Google Sheets with custom menu.
 
 See [Installation - Google Sheets](#installation-google-sheets) section below.
 
-### Option 2: Python Scripts (Recommended for Data Analysis)
+### Option 2: Google Colab → Sheets (Best for Beginners) 🔥
+
+Use Python in Google Colab and auto-upload to Google Sheets - **No installation required!**
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aakash-code/NSE-Scrap/blob/main/NSE_Colab_to_Sheets.ipynb)
+
+1. Click the badge above to open in Google Colab
+2. Run the cells (Shift+Enter)
+3. Authenticate with Google when prompted
+4. Data automatically appears in your Google Sheet!
+
+### Option 3: Python Scripts (Best for Local Processing)
+
+Run Python scripts locally and export to CSV/Excel/JSON.
 
 ```bash
 # Install dependencies
@@ -362,6 +377,48 @@ See **[PYTHON_USAGE.md](PYTHON_USAGE.md)** for:
 - Troubleshooting
 - Advanced usage patterns
 
+## Google Colab Integration (No Setup Required!)
+
+The easiest way to use Python with Google Sheets - runs entirely in the cloud!
+
+### Features
+- ✅ **No Installation**: Everything runs in Google Colab
+- ✅ **Auto-Upload to Sheets**: Data automatically appears in Google Sheets
+- ✅ **Beautiful Formatting**: Professional formatted headers and frozen rows
+- ✅ **One-Click Setup**: Just open the notebook and run
+- ✅ **Free to Use**: Uses Google's free Colab resources
+
+### How to Use
+
+1. **Open the Notebook**:
+
+   [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/aakash-code/NSE-Scrap/blob/main/NSE_Colab_to_Sheets.ipynb)
+
+2. **Run the Cells**: Press `Shift+Enter` to run each cell in order
+
+3. **Authenticate**: When prompted, sign in to Google to grant permissions
+
+4. **Choose What to Fetch**:
+   - All Indices
+   - Stocks by Index
+   - Stocks by Sector
+   - Everything at once
+
+5. **Done!** Your data appears in a Google Sheet automatically
+
+### Configuration
+
+Change the sheet name in the configuration cell:
+
+```python
+SHEET_NAME = "NSE Stock Data"  # Change this to your desired name
+```
+
+### Files
+
+- **NSE_Colab_to_Sheets.ipynb** - Ready-to-use Colab notebook
+- **nse_colab_to_sheets.py** - Python script version (for reference)
+
 ## Security & Privacy
 
 - The script runs entirely within your Google account
@@ -393,6 +450,13 @@ For issues, questions, or feature requests:
 ## Changelog
 
 ### Version 1.2.0 (2025-11-12)
+- **NEW: Google Colab Integration** 🔥:
+  - `NSE_Colab_to_Sheets.ipynb` - Ready-to-use Colab notebook
+  - `nse_colab_to_sheets.py` - Colab-compatible Python script
+  - Auto-upload to Google Sheets with formatting
+  - No installation required - runs entirely in cloud
+  - One-click "Open in Colab" button
+  - Perfect for beginners
 - **NEW: Python Scripts with nse-python Library**:
   - `nse_scraper.py` - Interactive scraper with menu interface
   - `nse_batch_scraper.py` - Automated batch processing
