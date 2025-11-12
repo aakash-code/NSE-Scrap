@@ -1,12 +1,22 @@
-# NSE IPO Automation for Google Sheets
+# NSE Data Automation for Google Sheets
 
-Automatically fetch and display IPO data from NSE India directly in Google Sheets with sorting, filtering, and auto-refresh capabilities.
+Automatically fetch and display IPO data and Stock Market data from NSE India directly in Google Sheets with sorting, filtering, and auto-refresh capabilities.
 
 ## Features
 
+### IPO Data
 - **Fetch IPO Data**: Automatically retrieves Current, Past, and Upcoming IPOs from NSE India
 - **Smart Filtering**: Filter by IPO status (Current/Past/Upcoming)
 - **Auto-Sorting**: Automatically sorts data by Security Type
+
+### Stock Market Data (NEW!)
+- **Index-wise Stock Data**: Fetch all stocks organized by major indices (NIFTY 50, NIFTY BANK, etc.)
+- **Sector-wise Stock Data**: Fetch all stocks organized by sectors (IT, Auto, Pharma, etc.)
+- **Custom Index Query**: Fetch stocks for any specific index
+- **All Indices List**: Get comprehensive list of all NSE indices with live data
+- **Live Market Data**: Real-time stock prices, changes, highs, lows, and more
+
+### General Features
 - **Anti-Scraping Handling**: Properly configured headers to bypass NSE's security measures
 - **Caching**: Caches data for 30 minutes to minimize API requests
 - **Beautiful Formatting**: Auto-formatted tables with frozen headers and alternating row colors
@@ -53,16 +63,42 @@ NSE India's website uses JavaScript to load IPO data and implements anti-scrapin
 
 After installation, you'll see the **NSE IPO Automation** menu in your Google Sheet:
 
-#### Main Functions:
+#### IPO Functions:
 
 1. **Fetch All IPOs**: Retrieves Current, Past, and Upcoming IPOs in one sheet
 2. **Fetch Past Issues Only**: Shows only closed/past IPOs
 3. **Fetch Current Issues Only**: Shows only currently active IPOs
 4. **Fetch Upcoming Issues Only**: Shows only upcoming IPOs
+
+#### Stock Market Data Functions (NEW!):
+
+1. **Fetch All Stocks (Index-wise)**: Retrieves stocks from all major indices including:
+   - NIFTY 50, NIFTY 100, NIFTY 200, NIFTY 500
+   - NIFTY BANK, NIFTY IT, NIFTY AUTO, NIFTY PHARMA
+   - NIFTY FMCG, NIFTY METAL, NIFTY REALTY, NIFTY ENERGY
+   - NIFTY MIDCAP 50, NIFTY SMALLCAP 50
+
+2. **Fetch All Stocks (Sector-wise)**: Retrieves stocks organized by sectors:
+   - Banking, IT, Auto, Pharma, FMCG, Metal
+   - Realty, Energy, Financial Services, Media
+   - Healthcare, Consumer Durables, Oil & Gas, and more
+
+3. **Fetch Stocks by Index...**: Enter any specific index name to fetch its stocks
+   - Example: Enter "NIFTY 50" to get all NIFTY 50 stocks
+   - Example: Enter "NIFTY BANK" to get all banking stocks
+
+4. **Fetch All Indices List**: Shows all NSE indices with live market data
+
+#### Utility Functions:
+
 5. **Clear Data**: Clears all data from the active sheet
-6. **About**: Shows information about the script
+6. **🔧 Test API Connection**: Tests NSE API connectivity
+7. **🗑️ Clear Cache**: Clears cached data to force fresh fetch
+8. **About**: Shows information about the script
 
 ### Data Columns
+
+#### IPO Data Columns
 
 The script fetches the following information for each IPO:
 
@@ -79,6 +115,25 @@ The script fetches the following information for each IPO:
 | Listing Date | Date of listing on exchange |
 | Status | Current status (Open, Closed, Upcoming) |
 | Symbol | Trading symbol |
+
+#### Stock Market Data Columns (NEW!)
+
+For stock market data, the following columns are fetched:
+
+| Column | Description |
+|--------|-------------|
+| Symbol | Trading symbol of the stock |
+| Company Name | Full name of the company |
+| Last Price | Current/Last traded price |
+| Change | Absolute price change |
+| % Change | Percentage price change |
+| Open | Opening price |
+| High | Day's high price |
+| Low | Day's low price |
+| Previous Close | Previous day's closing price |
+| Year High | 52-week high price |
+| Year Low | 52-week low price |
+| Index/Sector | Associated index or sector name |
 
 ### Automatic Sorting
 
@@ -165,11 +220,19 @@ To use these tools:
 
 ## Technical Details
 
-### API Endpoint
+### API Endpoints
 
-The script uses NSE India's official API endpoint:
+The script uses NSE India's official API endpoints:
+
+#### IPO Data:
 ```
 https://www.nseindia.com/api/ipo-detail
+```
+
+#### Stock Market Data:
+```
+https://www.nseindia.com/api/allIndices
+https://www.nseindia.com/api/equity-stockIndices?index=[INDEX_NAME]
 ```
 
 ### HTTP Headers
@@ -229,6 +292,25 @@ For issues, questions, or feature requests:
 3. Open an issue on GitHub with detailed error messages
 
 ## Changelog
+
+### Version 1.2.0 (2025-11-12)
+- **NEW: Stock Market Data Features**:
+  - Fetch all stocks organized by major indices (NIFTY 50, NIFTY BANK, etc.)
+  - Fetch all stocks organized by sectors (Banking, IT, Pharma, etc.)
+  - Custom index query support for any NSE index
+  - Fetch comprehensive list of all NSE indices with live data
+  - Real-time stock prices, changes, highs, lows, and year ranges
+- **New API Endpoints**:
+  - `https://www.nseindia.com/api/allIndices` - All indices data
+  - `https://www.nseindia.com/api/equity-stockIndices` - Index-wise stocks
+- **New Menu Items**:
+  - Stock Market Data submenu with 4 new options
+  - Fetch All Stocks (Index-wise)
+  - Fetch All Stocks (Sector-wise)
+  - Fetch Stocks by Index (custom query)
+  - Fetch All Indices List
+- **Enhanced Caching**: Added caching for indices and stock data
+- **Updated Documentation**: README updated with stock market features
 
 ### Version 1.1.0 (2025-11-07)
 - **Enhanced Debugging**: Added comprehensive logging throughout the script
